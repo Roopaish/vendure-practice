@@ -11,6 +11,8 @@ import {
 import { EmailPlugin, defaultEmailHandlers } from "@vendure/email-plugin";
 import "dotenv/config";
 import path from "path";
+import { CustomerCoverImage } from "./plugins/cover-image";
+import { WishlistPlugin } from "./plugins/wishlist-plugin/wishlist.plugin";
 
 const IS_DEV = process.env.APP_ENV === "dev";
 
@@ -103,5 +105,7 @@ export const config: VendureConfig = {
         apiPort: 3000,
       },
     }),
+    CustomerCoverImage,
+    WishlistPlugin,
   ],
 };
