@@ -5,12 +5,14 @@ import {
   DefaultJobQueuePlugin,
   DefaultSearchPlugin,
   LanguageCode,
+  NativeAuthenticationStrategy,
   VendureConfig,
   dummyPaymentHandler,
 } from "@vendure/core";
 import { EmailPlugin, defaultEmailHandlers } from "@vendure/email-plugin";
 import "dotenv/config";
 import path from "path";
+import { GoogleAuthenticationStrategy } from "./plugins/authentication/google-authentication-strategy";
 import { CustomerCoverImage } from "./plugins/cover-image";
 import { WishlistPlugin } from "./plugins/wishlist-plugin/wishlist.plugin";
 
@@ -43,6 +45,10 @@ export const config: VendureConfig = {
       identifier: process.env.SUPERADMIN_USERNAME,
       password: process.env.SUPERADMIN_PASSWORD,
     },
+    shopAuthenticationStrategy: [
+      new NativeAuthenticationStrategy(),
+      new GoogleAuthenticationStrategy(),
+    ],
     cookieOptions: {
       secret: process.env.COOKIE_SECRET,
     },
