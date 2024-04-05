@@ -15,6 +15,7 @@
     "migration:revert": "ts-node migration revert"
   },
   "dependencies": {
+    "@azure/msal-node": "^2.6.6",
     "@vendure/admin-ui-plugin": "2.1.8",
     "@vendure/asset-server-plugin": "2.1.8",
     "@vendure/core": "2.1.8",

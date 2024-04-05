@@ -25,6 +25,8 @@ export class GoogleAuthenticationStrategy
     // The clientId is obtained by creating a new OAuth client ID as described
     // in the Google guide linked above.
     this.client = new OAuth2Client(this.clientId);
+
+    console.log(this.client);
   }
 
   init(injector: Injector) {
@@ -87,3 +89,14 @@ export class GoogleAuthenticationStrategy
     });
   }
 }
+
+// mutation Login {
+//   authenticate(input: {
+//         google: { token: "token" }
+//       }) {
+//       ...on CurrentUser {
+//           id
+//           identifier
+//       }
+//     }
+// }
