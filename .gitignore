@@ -5,3 +5,4 @@ static/assets
 static/email/test-emails
 *.sqlite*
 .env
+logs.md

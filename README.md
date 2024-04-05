@@ -1,124 +1,111 @@
-# vendure-practice
+## Vendure Practice Repo
 
-This project was generated with [`@vendure/create`](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create).
+### Things done
 
-Useful links:
+- Avatar field to customer entity using config file
+- CoverImage field to customer entity using minimalistic plugin
+- Wishlist plugin using nestjs like structure
+- Google authentication
+- Microsoft Entra ID authentication
 
-- [Vendure docs](https://www.vendure.io/docs)
-- [Vendure Discord community](https://www.vendure.io/community)
-- [Vendure on GitHub](https://github.com/vendure-ecommerce/vendure)
-- [Vendure plugin template](https://github.com/vendure-ecommerce/plugin-template)
+### To run
 
-## Directory structure
+- Create file `vendure.sqlite` in root
+- `yarn install` then `yarn dev`
+- Copy .env.example to .env and fill in the values
 
-* `/src` contains the source code of your Vendure server. All your custom code and plugins should reside here.
-* `/static` contains static (non-code) files such as assets (e.g. uploaded images) and email templates.
+## Using Azure AD
 
-## Development
+- Get auth URL so that frontend and can go and a url with call back is written
 
-```
-yarn dev
-```
-
-will start the Vendure server and [worker](https://www.vendure.io/docs/developer-guide/vendure-worker/) processes from
-the `src` directory.
-
-## Build
-
-```
-yarn build
+```graphql
+query getAuthURL {
+  getAuthCodeUrl
+}
 ```
 
-will compile the TypeScript sources into the `/dist` directory.
+Response:
 
-## Production
-
-For production, there are many possibilities which depend on your operational requirements as well as your production
-hosting environment.
-
-### Running directly
-
-You can run the built files directly with the `start` script:
-
-```
-yarn start
+```json
+{
+  "data": {
+    "getAuthCodeUrl": "https://login.microsoftonline.com/1fb3105a-fb47-4b4a-a564-14c9ec290584/oauth2/v2.0/authorize?client_id=779e5087-4cae-4651-b285-54cbcac42c3f&scope=openid%20profile%20email%20User.Read%20openid%20profile%20offline_access&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fcallback%2Fazure-ad&client-request-id=1cbf476e-79df-4d42-acf9-519acdb56513&response_mode=query&response_type=code&x-client-SKU=msal.js.node&x-client-VER=2.6.6&x-client-OS=linux&x-client-CPU=x64&client_info=1"
+  }
+}
 ```
 
-You could also consider using a process manager like [pm2](https://pm2.keymetrics.io/) to run and manage
-the server & worker processes.
+- Go to url and get the code, you will be redirected to the following url, send the code to backend
 
-### Using Docker
-
-We've included a sample [Dockerfile](./Dockerfile) which you can build with the following command:
-
-```
-docker build -t vendure .
+```json
+localhost:3000/api/auth/callback/azure-ad?code={code}&client_info={client_info}&session_state={session_state}
 ```
 
-This builds an image and tags it with the name "vendure". We can then run it with:
-
-```
-# Run the server
-docker run -dp 3000:3000 -e "DB_HOST=host.docker.internal" --name vendure-server vendure npm run start:server
-
-# Run the worker
-docker run -dp 3000:3000 -e "DB_HOST=host.docker.internal" --name vendure-worker vendure npm run start:worker
-```
-
-Here is a breakdown of the command used above:
-
-- `docker run` - run the image we created with `docker build`
-- `-dp 3000:3000` - the `-d` flag means to run in "detached" mode, so it runs in the background and does not take
-control of your terminal. `-p 3000:3000` means to expose port 3000 of the container (which is what Vendure listens
-on by default) as port 3000 on your host machine.
-- `-e "DB_HOST=host.docker.internal"` - the `-e` option allows you to define environment variables. In this case we
-are setting the `DB_HOST` to point to a special DNS name that is created by Docker desktop which points to the IP of
-the host machine. Note that `host.docker.internal` only exists in a Docker Desktop environment and thus should only be
-used in development.
-- `--name vendure-server` - we give the container a human-readable name.
-- `vendure` - we are referencing the tag we set up during the build.
-- `npm run start:server` - this last part is the actual command that should be run inside the container.
-
-### Docker compose
-
-We've included a sample [docker-compose.yml](./docker-compose.yml) file which demonstrates how the server, worker, and
-database may be orchestrated with Docker Compose.
-
-## Plugins
-
-In Vendure, your custom functionality will live in [plugins](https://www.vendure.io/docs/plugins/).
-These should be located in the `./src/plugins` directory.
-
-## Migrations
-
-[Migrations](https://www.vendure.io/docs/developer-guide/migrations/) allow safe updates to the database schema. Migrations
-will be required whenever you make changes to the `customFields` config or define new entities in a plugin.
-
-The following npm scripts can be used to generate migrations:
-
-```
-yarn migration:generate [name]
+```graphql
+mutation Login {
+  authenticate(input: { azureAD: { code: $code } }) {
+    ... on CurrentUser {
+      id
+      identifier
+    }
+  }
+}
 ```
 
-The generated migration file will be found in the `./src/migrations/` directory, and should be committed to source control.
-Next time you start the server, and outstanding migrations found in that directory will be run by the `runMigrations()`
-function in the [index.ts file](./src/index.ts).
+Note: We can also pass custom redirectURI from frontend in both queries and mutation
 
-If, during initial development, you do not wish to manually generate a migration on each change to customFields etc, you
-can set `dbConnectionOptions.synchronize` to `true`. This will cause the database schema to get automatically updated
-on each start, removing the need for migration files. Note that this is **not** recommended once you have production
-data that you cannot lose.
+From where we get tokeResult which looks like this
 
----
-
-You can also run any pending migrations manually, without starting the server by running:
-
-```
-yarn migration:run
-```
-
-You can revert the most recently-applied migration with:
-
-```
-yarn migration:revert
+```ts
+type TokenResult = {
+  authority: string;
+  uniqueId: string; // unique always
+  tenantId: string;
+  scopes: string[];
+  account: {
+    homeAccountId: string;
+    environment: string;
+    tenantId: string;
+    username: string;
+    localAccountId: string;
+    name: string;
+    nativeAccountId?: any;
+    authorityType: string;
+    // tenantProfiles: Map<any, any>[];
+    idTokenClaims: Record<string, any>;
+    idToken: string;
+  };
+  idToken: string;
+  idTokenClaims: {
+    aud: string;
+    iss: string;
+    iat: number;
+    nbf: number;
+    exp: number;
+    email: string;
+    idp: string;
+    name: string;
+    oid: string;
+    preferred_username: string;
+    // prov_data: any[];
+    rh: string;
+    sub: string;
+    tid: string;
+    uti: string;
+    ver: string;
+  };
+  accessToken: string;
+  fromCache: boolean;
+  expiresOn: Date;
+  extExpiresOn: Date;
+  refreshOn?: any;
+  correlationId: string;
+  requestId: string;
+  familyId: string;
+  tokenType: string;
+  state: string;
+  cloudGraphHostName: string;
+  msGraphHost: string;
+  code?: any;
+  fromNativeBroker: boolean;
+};
 ```

@@ -13,6 +13,8 @@ import { EmailPlugin, defaultEmailHandlers } from "@vendure/email-plugin";
 import "dotenv/config";
 import path from "path";
 import { GoogleAuthenticationStrategy } from "./plugins/authentication/google-authentication-strategy";
+import { AzureADAuthenticationStrategy } from "./plugins/authentication/ms-entra-id/ms-entra-id-authentication-strategy";
+import { EntraIDPlugin } from "./plugins/authentication/ms-entra-id/ms-entra-id.plugin";
 import { CustomerCoverImage } from "./plugins/cover-image";
 import { WishlistPlugin } from "./plugins/wishlist-plugin/wishlist.plugin";
 
@@ -48,6 +50,7 @@ export const config: VendureConfig = {
     shopAuthenticationStrategy: [
       new NativeAuthenticationStrategy(),
       new GoogleAuthenticationStrategy(),
+      new AzureADAuthenticationStrategy(),
     ],
     cookieOptions: {
       secret: process.env.COOKIE_SECRET,
@@ -59,7 +62,7 @@ export const config: VendureConfig = {
     // the `synchronize` and `migrations` options.
     synchronize: false,
     migrations: [path.join(__dirname, "./migrations/*.+(js|ts)")],
-    logging: false,
+    logging: true,
     database: path.join(__dirname, "../vendure.sqlite"),
   },
   paymentOptions: {
@@ -113,5 +116,6 @@ export const config: VendureConfig = {
     }),
     CustomerCoverImage,
     WishlistPlugin,
+    EntraIDPlugin,
   ],
 };

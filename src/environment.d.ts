@@ -10,10 +10,11 @@ declare global {
       SUPERADMIN_USERNAME: string;
       SUPERADMIN_PASSWORD: string;
       GOOGLE_CLIENT_ID: string;
-      AZURE_AD_AUDIENCE: string;
-      AZURE_AD_CLIENTID: string;
-      AZURE_AD_TENANTID: string;
+      AZURE_AD_CLIENT_ID: string;
+      AZURE_AD_TENANT_ID: string;
       AZURE_AD_CLIENT_SECRET: string;
+      AZURE_AD_REDIRECT_URI: string;
+      AZURE_AD_POST_LOGOUT_REDIRECT_URI: string;
     }
   }
 }
