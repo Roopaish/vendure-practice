@@ -29,7 +29,7 @@ Response:
 ```json
 {
   "data": {
-    "getAuthCodeUrl": "https://login.microsoftonline.com/1fb3105a-fb47-4b4a-a564-14c9ec290584/oauth2/v2.0/authorize?client_id=779e5087-4cae-4651-b285-54cbcac42c3f&scope=openid%20profile%20email%20User.Read%20openid%20profile%20offline_access&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fcallback%2Fazure-ad&client-request-id=1cbf476e-79df-4d42-acf9-519acdb56513&response_mode=query&response_type=code&x-client-SKU=msal.js.node&x-client-VER=2.6.6&x-client-OS=linux&x-client-CPU=x64&client_info=1"
+    "getAuthCodeUrl": "https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/authorize?client_id={client_d&scope=openid%20profile%20email%20User.Read%20openid%20profile%20offline_access&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fcallback%2Fazure-ad&client-request-id={client_request_id}&response_mode=query&response_type=code&x-client-SKU=msal.js.node&x-client-VER=2.6.6&x-client-OS=linux&x-client-CPU=x64&client_info=1"
   }
 }
 ```
